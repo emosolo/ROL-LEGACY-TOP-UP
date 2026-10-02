@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="km" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROS LEGACY - Cyberpunk Gaming Top-Up</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyberpunk: {
+                            bg: '#080614',
+                            surface: '#110d24',
+                            card: '#181333',
+                            neonPink: '#ff0055',
+                            neonCyan: '#00f0ff',
+                            neonPurple: '#9d00ff'
+                        }
+                    },
+                    boxShadow: {
+                        'neon-cyan': '0 0 20px rgba(0, 240, 255, 0.4)',
+                        'neon-pink': '0 0 20px rgba(255, 0, 85, 0.4)',
+                        'neon-purple': '0 0 20px rgba(157, 0, 255, 0.4)',
+                        'neon-spark': '0 0 25px rgba(255, 0, 85, 0.7), inset 0 0 15px rgba(0, 240, 255, 0.5)'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Orbitron & Siemreap -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@300;400;500;600;700&family=Siemreap&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Siemreap', 'Inter', sans-serif;
+            background-color: #080614;
+            color: #f3f4f6;
+            background-image: linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .font-orbitron {
+            font-family: 'Orbitron', 'Siemreap', sans-serif;
+        }
+        /* Custom Lightning Sparks Animation */
+        @keyframes sparkPulse {
+            0%, 100% { border-color: rgba(255, 0, 85, 0.6); box-shadow: 0 0 15px rgba(255, 0, 85, 0.4), inset 0 0 10px rgba(0, 240, 255, 0.3); }
+            50% { border-color: rgba(0, 240, 255, 0.9); box-shadow: 0 0 30px rgba(0, 240, 255, 0.7), inset 0 0 20px rgba(255, 0, 85, 0.6); }
+        }
+        .spark-border {
+            animation: sparkPulse 3s infinite ease-in-out;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #110d24;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00f0ff;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cyberpunk-neonCyan selection:text-black">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-[#080614]/90 backdrop-blur-md border-b border-cyberpunk-neonCyan/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('store')">
+                <!-- Glowing Logo R with spark effect -->
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyberpunk-neonPink via-cyberpunk-neonPurple to-cyberpunk-neonCyan flex items-center justify-center spark-border text-white font-orbitron font-extrabold text-xl shadow-neon-spark">
+                    R
+                </div>
+                <div>
+                    <h1 class="font-orbitron text-base sm:text-xl font-extrabold tracking-wider text-white">ROS LEGACY TOPUP</h1>
+                    <p class="text-[10px] text-gray-400 tracking-widest font-mono">POWER BY QVTEAM</p>
+                </div>
+            </div>
+            
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
+                <a href="#storeView" onclick="switchView('store')" class="hover:text-cyberpunk-neonCyan transition-colors" data-translate="nav_store">Diamond Store</a>
+                <a href="#howToSection" class="hover:text-cyberpunk-neonCyan transition-colors" data-translate="nav_howto">How to Top Up</a>
+                <a href="#faqSection" class="hover:text-cyberpunk-neonCyan transition-colors" data-translate="nav_faq">FAQ</a>
+                <a href="https://t.me/Lchansovongo" target="_blank" rel="noopener noreferrer" class="hover:text-cyberpunk-neonCyan transition-colors">Telegram</a>
+            </nav>
+
+            <div class="flex items-center space-x-3">
+                <div class="hidden lg:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-cyberpunk-surface border border-green-500/30 text-green-400 text-xs font-mono">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span>24H/7 ONLINE</span>
+                </div>
+                <button onclick="switchView('track')" class="px-3 sm:px-4 py-2 rounded-xl font-orbitron text-xs font-bold transition-all duration-300 bg-cyberpunk-card text-cyberpunk-neonCyan border border-cyberpunk-neonCyan/50 hover:bg-cyberpunk-neonCyan/10 flex items-center space-x-2 shadow-neon-cyan">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span data-translate="btn_find">Find Order</span>
+                </button>
+                <button onclick="openAdminLogin()" class="px-3 sm:px-4 py-2 rounded-xl font-orbitron text-xs font-bold transition-all duration-300 bg-gradient-to-r from-cyberpunk-neonPink to-cyberpunk-neonPurple text-white shadow-neon-pink hover:scale-105 flex items-center space-x-2">
+                    <i class="fa-solid fa-lock"></i>
+                    <span data-translate="btn_admin">Admin Login</span>
+                </button>
+
+                <!-- Language Switcher Button -->
+                <button onclick="toggleLanguage()" class="px-3 py-2 rounded-xl font-orbitron text-xs font-bold bg-cyberpunk-surface border border-cyberpunk-neonCyan/40 text-cyberpunk-neonCyan hover:bg-cyberpunk-neonCyan/10 transition-all flex items-center space-x-1.5 shadow-neon-cyan">
+                    <i class="fa-solid fa-globe"></i>
+                    <span id="langLabel" class="font-bold">KH / EN</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+
+        <!-- STORE VIEW -->
+        <div id="storeView" class="space-y-12">
+            
+            <!-- Hero Banner -->
+            <div class="relative rounded-3xl overflow-hidden border border-cyberpunk-neonCyan/30 bg-gradient-to-r from-cyberpunk-surface via-cyberpunk-card to-cyberpunk-surface p-8 sm:p-14 shadow-neon-cyan text-center">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,240,255,0.1)_0,transparent_70%)] pointer-events-none"></div>
+                <div class="relative z-10 max-w-3xl mx-auto space-y-4">
+                    <h2 class="font-orbitron text-2xl sm:text-5xl font-extrabold tracking-tight text-white" data-translate="hero_title">
+                        ROS LEGACY List Diamond
+                    </h2>
+                    <p class="text-gray-400 text-xs sm:text-base font-medium" data-translate="hero_subtitle">INSTANT • SECURE • RELIABLE DIAMOND TOP UP SERVICE</p>
+                    
+                    <div class="flex flex-wrap justify-center gap-4 pt-4">
+                        <div class="flex items-center space-x-2 px-4 py-2 rounded-xl bg-cyberpunk-surface border border-cyberpunk-neonCyan/30 text-xs text-cyberpunk-neonCyan font-mono">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span data-translate="badge_safe">Safe Account Protection</span>
+                        </div>
+                        <div class="flex items-center space-x-2 px-4 py-2 rounded-xl bg-cyberpunk-surface border border-cyberpunk-neonPink/30 text-xs text-cyberpunk-neonPink font-mono">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span data-translate="badge_fast">Fast Delivery in 5-10m</span>
+                        </div>
+                        <div class="flex items-center space-x-2 px-4 py-2 rounded-xl bg-cyberpunk-surface border border-purple-500/30 text-xs text-purple-400 font-mono">
+                            <i class="fa-solid fa-lock"></i>
+                            <span data-translate="badge_ddos">Anti-DDoS Armor Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Section -->
+            <div class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-800 pb-4">
+                    <div>
+                        <h3 class="font-orbitron text-lg sm:text-2xl font-bold text-white flex items-center space-x-3">
+                            <i class="fa-solid fa-gem text-cyberpunk-neonCyan"></i>
+                            <span data-translate="section_select_pkg">SELECT DIAMOND PACKAGE</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1">ROS LEGACY PC & MOBILE</p>
+                    </div>
+                    <span class="mt-2 sm:mt-0 px-3 py-1 rounded-lg bg-cyberpunk-surface border border-gray-800 text-xs font-mono text-gray-300" data-translate="choose_pkg_label">Choose Package</span>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6" id="productsGrid"></div>
+            </div>
+
+            <!-- Important Warning Banner -->
+            <div class="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-6 flex items-start space-x-4">
+                <div class="text-amber-400 text-2xl mt-0.5">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div class="space-y-1">
+                    <h4 class="font-orbitron font-bold text-amber-400 text-sm" data-translate="warning_title">IMPORTANT WARNING</h4>
+                    <p class="text-xs sm:text-sm text-gray-300 leading-relaxed" data-translate="warning_desc">
+                        Please provide correct Gmail, Password, and ABA/Bank Name. Do not log into your game 5 to 10 minutes before/after top-up. If diamonds are delayed, contact admin immediately via Telegram or Discord.
+                    </p>
+                </div>
+            </div>
+
+            <!-- How To Top Up Section -->
+            <div id="howToSection" class="space-y-8 pt-8">
+                <div class="text-center space-y-2">
+                    <h3 class="font-orbitron text-xl sm:text-3xl font-bold text-white" data-translate="howto_main_title">HOW TO TOP UP ROS LEGACY</h3>
+                    <p class="text-xs text-gray-400" data-translate="howto_main_subtitle">Follow these simple steps for fast and safe diamond delivery by Chhovornn168.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-cyberpunk-surface border border-gray-800 rounded-2xl p-6 relative">
+                        <div class="w-8 h-8 rounded-lg bg-cyberpunk-neonCyan text-black font-bold font-orbitron flex items-center justify-center mb-4 text-sm shadow-neon-cyan">1</div>
+                        <h4 class="font-orbitron font-bold text-white mb-2" data-translate="step1_title">Choose Package</h4>
+                        <p class="text-xs text-gray-400" data-translate="step1_desc">Select your desired diamond amount from the store grid.</p>
+                    </div>
+                    <div class="bg-cyberpunk-surface border border-gray-800 rounded-2xl p-6 relative">
+                        <div class="w-8 h-8 rounded-lg bg-cyberpunk-neonPink text-white font-bold font-orbitron flex items-center justify-center mb-4 text-sm shadow-neon-pink">2</div>
+                        <h4 class="font-orbitron font-bold text-white mb-2" data-translate="step2_title">Enter Gmail & ABA Name</h4>
+                        <p class="text-xs text-gray-400" data-translate="step2_desc">Provide your account login credentials and ABA sender name.</p>
+                    </div>
+                    <div class="bg-cyberpunk-surface border border-gray-800 rounded-2xl p-6 relative">
+                        <div class="w-8 h-8 rounded-lg bg-cyberpunk-neonPurple text-white font-bold font-orbitron flex items-center justify-center mb-4 text-sm shadow-neon-purple">3</div>
+                        <h4 class="font-orbitron font-bold text-white mb-2" data-translate="step3_title">Transfer via ABA Pay</h4>
+                        <p class="text-xs text-gray-400" data-translate="step3_desc">Scan QR or transfer to official ABA account securely.</p>
+                    </div>
+                    <div class="bg-cyberpunk-surface border border-gray-800 rounded-2xl p-6 relative">
+                        <div class="w-8 h-8 rounded-lg bg-green-500 text-black font-bold font-orbitron flex items-center justify-center mb-4 text-sm">4</div>
+                        <h4 class="font-orbitron font-bold text-white mb-2" data-translate="step4_title">Receive Diamonds</h4>
+                        <p class="text-xs text-gray-400" data-translate="step4_desc">Diamonds credited to your account within 5 - 10 minutes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div id="faqSection" class="space-y-6 pt-8">
+                <div class="text-center space-y-2">
+                    <h3 class="font-orbitron text-xl sm:text-3xl font-bold text-white" data-translate="faq_main_title">FREQUENTLY ASKED QUESTIONS</h3>
+                    <p class="text-xs text-gray-400" data-translate="faq_main_subtitle">Got questions? We have answers.</p>
+                </div>
+
+                <div class="max-w-3xl mx-auto space-y-4">
+                    <div class="bg-cyberpunk-surface border border-gray-800 rounded-2xl p-6 space-y-2">
+                        <h4 class="font-orbitron font-bold text-white text-sm" data-translate="faq1_q">Is my account safe with Chhovornn168?</h4>
+                        <p class="text-xs text-gray-400 leading-relaxed" data-translate="faq1_a">Yes, 100% safe. We employ secure anti-DDoS and safe protocols. Your credentials are strictly used for diamond processing.</p>
+                    </div>
+                    <div class="bg-cyberpunk-surface border border-gray-800 rounded-2xl p-6 space-y-2">
+                        <h4 class="font-orbitron font-bold text-white text-sm" data-translate="faq2_q">How long does delivery take?</h4>
+                        <p class="text-xs text-gray-400 leading-relaxed" data-translate="faq2_a">Orders are processed instantly upon payment verification, usually within 5 to 10 minutes.</p>
+                    </div>
+                    <div class="bg-cyberpunk-surface border border-gray-800 rounded-2xl p-6 space-y-2">
+                        <h4 class="font-orbitron font-bold text-white text-sm" data-translate="faq3_q">What if diamonds don't appear?</h4>
+                        <p class="text-xs text-gray-400 leading-relaxed" data-translate="faq3_a">Do not log into the game during top-up. Contact our support team on Telegram or Discord immediately with your transaction reference.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TRACK ORDER VIEW -->
+        <div id="trackView" class="space-y-8 hidden">
+            <div class="max-w-xl mx-auto bg-cyberpunk-surface border border-cyberpunk-neonCyan/40 rounded-3xl p-8 shadow-neon-cyan">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-orbitron text-xl font-bold text-white" data-translate="track_title">TRACK YOUR ORDER</h3>
+                    <button onclick="switchView('store')" class="px-3 py-1 rounded-xl bg-cyberpunk-card text-gray-300 border border-gray-700 text-xs font-mono hover:text-white" data-translate="btn_back_store">Back to Store</button>
+                </div>
+                <p class="text-xs text-gray-400 mb-6" data-translate="track_desc">Enter your Order ID or Game Gmail/UID.</p>
+                
+                <div class="flex space-x-2 mb-6">
+                    <input type="text" id="trackQueryInput" placeholder="Enter Order ID (e.g. ROS-171...)" class="flex-grow bg-cyberpunk-card border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyberpunk-neonCyan text-sm">
+                    <button onclick="searchOrder()" class="px-6 py-3 rounded-xl bg-cyberpunk-neonCyan text-black font-orbitron font-bold hover:shadow-neon-cyan transition-all text-sm">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
+                </div>
+
+                <div id="trackResultContainer" class="space-y-4"></div>
+            </div>
+        </div>
+
+        <!-- ADMIN DASHBOARD VIEW -->
+        <div id="adminView" class="space-y-8 hidden">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-cyberpunk-surface border border-cyberpunk-neonPink/40 rounded-3xl p-6 shadow-neon-pink">
+                <div>
+                    <span class="px-3 py-1 rounded-full text-xs font-mono bg-cyberpunk-neonPink/20 text-cyberpunk-neonPink border border-cyberpunk-neonPink/50">🔒 ADMIN PANEL</span>
+                    <h2 class="font-orbitron text-2xl sm:text-3xl font-extrabold text-white mt-2">CHHOVORNN168 DASHBOARD</h2>
+                </div>
+                <div class="flex flex-wrap items-center gap-3">
+                    <button onclick="clearPendingAndFailedOrders()" class="px-4 py-2 rounded-xl font-orbitron text-xs bg-amber-500/20 text-amber-300 border border-amber-500 hover:bg-amber-500/30 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-broom"></i>
+                        <span>Clear pending & failed</span>
+                    </button>
+                    <button onclick="clearAllOrders()" class="px-4 py-2 rounded-xl font-orbitron text-xs bg-red-500/20 text-red-400 border border-red-500 hover:bg-red-500/35 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Clear All</span>
+                    </button>
+                    <button onclick="switchView('store')" class="px-4 py-2 rounded-xl font-orbitron text-xs bg-cyberpunk-card text-gray-300 border border-gray-700 hover:text-white">Store View</button>
+                    <button onclick="logoutAdmin()" class="px-4 py-2 rounded-xl font-orbitron text-xs bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 hover:text-white">Logout</button>
+                    
+                    <select id="adminApproverSelect" class="px-4 py-2 rounded-xl font-orbitron text-xs bg-cyberpunk-card text-cyberpunk-neonCyan border border-cyberpunk-neonCyan/50 focus:outline-none">
+                        <option value="" disabled selected>Select Admin Name</option>
+                        <option value="Chhhovorn">Chhhovorn</option>
+                        <option value="Vong">Vong</option>
+                        <option value="PheakNa">PheakNa</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="bg-cyberpunk-surface border border-gray-800 rounded-2xl p-4 text-center">
+                    <p class="text-xs font-mono text-gray-400 mb-1">TOTAL ORDERS</p>
+                    <p id="statTotal" class="font-orbitron text-2xl font-bold text-white">0</p>
+                </div>
+                <div class="bg-cyberpunk-surface border border-gray-800 rounded-2xl p-4 text-center">
+                    <p class="text-xs font-mono text-gray-400 mb-1">REVENUE ($)</p>
+                    <p id="statRevenue" class="font-orbitron text-2xl font-bold text-cyberpunk-neonCyan">$0.00</p>
+                </div>
+                <div class="bg-cyberpunk-surface border border-gray-800 rounded-2xl p-4 text-center">
+                    <p class="text-xs font-mono text-yellow-500 mb-1">PENDING</p>
+                    <p id="statPending" class="font-orbitron text-2xl font-bold text-yellow-400">0</p>
+                </div>
+                <div class="bg-cyberpunk-surface border border-gray-800 rounded-2xl p-4 text-center">
+                    <p class="text-xs font-mono text-green-500 mb-1">APPROVED</p>
+                    <p id="statApproved" class="font-orbitron text-2xl font-bold text-green-400">0</p>
+                </div>
+                <div class="bg-cyberpunk-surface border border-gray-800 rounded-2xl p-4 text-center col-span-2 lg:col-span-1">
+                    <p class="text-xs font-mono text-red-500 mb-1">FAILED</p>
+                    <p id="statFailed" class="font-orbitron text-2xl font-bold text-red-400">0</p>
+                </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="bg-cyberpunk-surface border border-gray-800 rounded-3xl overflow-hidden shadow-xl">
+                <div class="p-6 border-b border-gray-800 flex items-center justify-between">
+                    <h3 class="font-orbitron text-lg font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-list-check text-cyberpunk-neonCyan"></i>
+                        <span>LIVE ORDERS REAL-TIME STREAM</span>
+                    </h3>
+                    <span class="text-xs font-mono text-gray-400">15-Day Retention Active</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-cyberpunk-card border-b border-gray-800 text-xs font-mono text-cyberpunk-neonCyan">
+                                <th class="p-4">ORDER ID</th>
+                                <th class="p-4">PACKAGE</th>
+                                <th class="p-4">ACCOUNT & PAYMENT DETAILS</th>
+                                <th class="p-4">PRICE</th>
+                                <th class="p-4">STATUS</th>
+                                <th class="p-4 text-right">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminOrdersTableBody" class="divide-y divide-gray-800/60 text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
+        <div class="bg-cyberpunk-surface border border-cyberpunk-neonCyan/50 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-neon-cyan relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeCheckout()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div id="selectedProductSummary" class="bg-cyberpunk-card border border-cyberpunk-neonCyan/30 rounded-2xl p-4 mb-6 flex items-center justify-between"></div>
+
+            <form id="checkoutForm" onsubmit="submitOrder(event)" class="space-y-4 font-mono">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1 uppercase tracking-wide" data-translate="modal_email">PLAYER GMAIL / USERNAME</label>
+                    <input type="text" id="gameEmail" required placeholder="example@gmail.com" class="w-full bg-cyberpunk-card border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyberpunk-neonCyan">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1 uppercase tracking-wide" data-translate="modal_pass">PLAYER PASSWORD</label>
+                    <input type="password" id="gamePass" required placeholder="••••••••" class="w-full bg-cyberpunk-card border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyberpunk-neonCyan">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1 uppercase tracking-wide" data-translate="modal_abaname">ABA NAME OR BANK NAME</label>
+                    <input type="text" id="abaSender" required placeholder="Enter Your Name Bank" class="w-full bg-cyberpunk-card border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyberpunk-neonCyan">
+                </div>
+                
+                <div class="bg-cyberpunk-card border border-cyberpunk-neonCyan/40 rounded-2xl p-4 text-center space-y-2">
+                    <p class="text-[11px] font-bold text-gray-400 tracking-widest"><i class="fa-solid fa-credit-card mr-1 text-cyberpunk-neonCyan"></i> <span data-translate="modal_paylink_title">OFFICIAL PAYMENT LINK</span></p>
+                    <a href="https://link.payway.com.kh/ABAPAYwL520523j" target="_blank" rel="noopener noreferrer" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyberpunk-neonCyan to-cyberpunk-neonPurple font-orbitron text-xs text-black font-extrabold shadow-neon-cyan hover:scale-[1.02] transition-all flex items-center justify-center space-x-2">
+                        <span data-translate="modal_paylink_btn">🚀 OPEN OFFICIAL ABA PAY LINK</span>
+                    </a>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1 uppercase tracking-wide" data-translate="modal_txref">TRANSACTION REFERENCE / NOTE</label>
+                    <input type="text" id="txRef" placeholder="e.g. ABA Ref #123456" class="w-full bg-cyberpunk-card border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyberpunk-neonCyan">
+                </div>
+                
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-cyberpunk-neonPink to-cyberpunk-neonPurple font-orbitron text-xs text-white font-extrabold shadow-neon-pink hover:scale-[1.02] transition-all tracking-wider" data-translate="modal_submit_btn">
+                        Submit Top-Up Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
+        <div class="bg-cyberpunk-surface border border-cyberpunk-neonPink/50 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-neon-pink relative">
+            <button onclick="closeAdminLogin()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-12 h-12 bg-cyberpunk-neonPink/20 text-cyberpunk-neonPink rounded-xl flex items-center justify-center mx-auto mb-4 text-2xl border border-cyberpunk-neonPink">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="font-orbitron text-xl font-bold text-white mb-2 text-center">ADMIN AUTHENTICATION</h3>
+            <p class="text-xs text-gray-400 mb-6 text-center">Enter credentials to access Chhovornn168 dashboard.</p>
+
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-mono text-cyberpunk-neonPink mb-1">USERNAME</label>
+                    <input type="text" id="adminUser" required class="w-full bg-cyberpunk-card border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyberpunk-neonPink">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-cyberpunk-neonPink mb-1">PASSWORD</label>
+                    <input type="password" id="adminPass" required class="w-full bg-cyberpunk-card border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyberpunk-neonPink">
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyberpunk-neonPink to-cyberpunk-neonPurple font-orbitron text-xs text-white font-bold shadow-neon-pink hover:scale-[1.02] transition-all mt-2">
+                    LOGIN TO DASHBOARD
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-gray-800 bg-cyberpunk-surface py-12 relative overflow-hidden">
+        <!-- Background Lightning Sparks Effect Layer -->
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(255,0,85,0.08)_0,transparent_70%),radial-gradient(ellipse_at_top,rgba(0,240,255,0.08)_0,transparent_70%)] pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 relative z-10">
+            
+            <!-- Box 1: Brand Info -->
+            <div>
+                <h4 class="font-orbitron font-bold text-white text-xs mb-3 tracking-wider text-cyberpunk-neonCyan flex items-center space-x-1.5">
+                    <div class="w-5 h-5 rounded-lg bg-gradient-to-tr from-cyberpunk-neonPink via-cyberpunk-neonPurple to-cyberpunk-neonCyan flex items-center justify-center text-white font-orbitron text-[10px] spark-border shadow-neon-spark">R</div>
+                    <span>ROS LEGACY</span>
+                </h4>
+                <div class="p-5 rounded-2xl bg-cyberpunk-card/90 border border-cyberpunk-neonCyan/40 spark-border space-y-3 text-xs text-gray-300 shadow-neon-cyan leading-relaxed">
+                    <p data-translate="footer_desc">ហាងទិញពេជ្រ ROS Legacy ផ្លូវការ។ រៀបចំឡើងដោយ Chhovornn168 ។ សេវាកម្មរហ័ស មានសុវត្ថិភាព និងទុកចិត្តបាន។</p>
+                </div>
+            </div>
+
+            <!-- Box 2: Quick Links -->
+            <div>
+                <h4 class="font-orbitron font-bold text-white text-xs mb-3 tracking-wider text-purple-400 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-link text-purple-400"></i>
+                    <span data-translate="footer_links_title">តំណភ្ជាប់រហ័ស</span>
+                </h4>
+                <div class="p-5 rounded-2xl bg-cyberpunk-card/90 border border-purple-500/40 spark-border space-y-2 text-xs font-mono shadow-neon-purple">
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#storeView" onclick="switchView('store')" class="hover:text-cyberpunk-neonCyan transition-colors flex items-center space-x-2"><i class="fa-solid fa-chevron-right text-[10px] text-purple-400"></i><span data-translate="nav_store">ទិញពេជ្រ</span></a></li>
+                        <li><a href="#howToSection" class="hover:text-cyberpunk-neonCyan transition-colors flex items-center space-x-2"><i class="fa-solid fa-chevron-right text-[10px] text-purple-400"></i><span data-translate="nav_howto">របៀបទិញ</span></a></li>
+                        <li><a href="#faqSection" class="hover:text-cyberpunk-neonCyan transition-colors flex items-center space-x-2"><i class="fa-solid fa-chevron-right text-[10px] text-purple-400"></i><span data-translate="nav_faq">សំណួរញឹកញាប់</span></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Box 3: Official Channels -->
+            <div>
+                <h4 class="font-orbitron font-bold text-white text-xs mb-3 tracking-wider text-cyberpunk-neonPink flex items-center space-x-1.5">
+                    <i class="fa-brands fa-discord text-cyberpunk-neonCyan"></i>
+                    <span data-translate="footer_channels_title">ឆានែលផ្លូវការ</span>
+                </h4>
+                <div class="p-5 rounded-2xl bg-cyberpunk-card/90 border border-cyberpunk-neonCyan/40 spark-border space-y-4 text-xs font-mono shadow-neon-cyan">
+                    <a href="https://discord.gg/NTsVcCR3F" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-3 text-gray-300 hover:text-cyberpunk-neonCyan transition-colors py-1">
+                        <i class="fa-brands fa-discord text-cyberpunk-neonCyan text-base"></i>
+                        <span class="font-bold text-white text-sm">Ros Legacy Community</span>
+                    </a>
+                    <div class="border-t border-gray-800/80 pt-3 flex items-center space-x-3 text-gray-300">
+                        <i class="fa-brands fa-telegram text-cyberpunk-neonCyan text-base"></i>
+                        <span>Telegram: <a href="https://t.me/+xOD7VDQwoQo3OGM1" target="_blank" rel="noopener noreferrer" class="text-cyberpunk-neonCyan hover:underline font-bold">@Chhovornn168</a></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box 4: Security Guarantee -->
+            <div>
+                <h4 class="font-orbitron font-bold text-white text-xs mb-3 tracking-wider text-green-400 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-shield-halved text-green-400"></i>
+                    <span data-translate="footer_security_title">ការធានាសុវត្ថិភាព</span>
+                </h4>
+                <div class="p-5 rounded-2xl bg-cyberpunk-card/90 border border-green-500/40 spark-border space-y-2 text-xs font-mono text-gray-300 shadow-lg">
+                    <div class="flex items-center space-x-2"><i class="fa-solid fa-check text-green-400"></i><span data-translate="badge_safe">ការពារគណនីមានសុវត្ថិភាព ១០០%</span></div>
+                    <div class="flex items-center space-x-2"><i class="fa-solid fa-bolt text-yellow-400"></i><span data-translate="badge_fast">ទម្លាក់ពេជ្រលឿនក្នុង ៥-១០នាទី</span></div>
+                    <div class="flex items-center space-x-2"><i class="fa-solid fa-lock text-cyberpunk-neonCyan"></i><span data-translate="badge_ddos">ប្រព័ន្ធការពារប្រឆាំង DDoS</span></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-8 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 font-mono relative z-10">
+            <p>© 2026 ROS LEGACY CYBER STORE. Developed for Chhovornn168. All rights reserved.</p>
+            <p class="mt-2 sm:mt-0 text-cyberpunk-neonCyan">Play More • Be Stronger • Together</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK Logic & App Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA6oogzW5Tx0YQIUhVYyuWsskBU82q_kLE",
+            authDomain: "roslegacytopup.firebaseapp.com",
+            databaseURL: "https://roslegacytopup-default-rtdb.firebaseio.com",
+            projectId: "roslegacytopup",
+            storageBucket: "roslegacytopup.firebasestorage.app",
+            messagingSenderId: "253038105071",
+            appId: "1:253038105071:web:00bea5d01c37bb8de1261a",
+            measurementId: "G-FRWBFVDQKM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const translations = {
+            en: {
+                nav_store: "Diamond Store",
+                nav_howto: "How to Top Up",
+                nav_faq: "FAQ",
+                btn_find: "Find Order",
+                btn_admin: "Admin Login",
+                hero_title: "ROS LEGACY List Diamond",
+                hero_subtitle: "INSTANT • SECURE • RELIABLE DIAMOND TOP UP SERVICE",
+                badge_safe: "Safe Account Protection 100%",
+                badge_fast: "Fast Delivery in 5-10m",
+                badge_ddos: "Anti-DDoS Armor Active",
+                section_select_pkg: "SELECT DIAMOND PACKAGE",
+                choose_pkg_label: "Choose Package",
+                buy_now: "BUY NOW",
+                warning_title: "IMPORTANT WARNING",
+                warning_desc: "Please provide correct Gmail, Password, and ABA/Bank Name. Do not log into your game 5 to 10 minutes before/after top-up. If diamonds are delayed, contact admin immediately via Telegram or Discord.",
+                howto_main_title: "HOW TO TOP UP ROS LEGACY",
+                howto_main_subtitle: "Follow these simple steps for fast and safe diamond delivery by Chhovornn168.",
+                step1_title: "Choose Package",
+                step1_desc: "Select your desired diamond amount from the store grid.",
+                step2_title: "Enter Gmail & ABA Name",
+                step2_desc: "Provide your account login credentials and ABA sender name.",
+                step3_title: "Transfer via ABA Pay",
+                step3_desc: "Scan QR or transfer to official ABA account securely.",
+                step4_title: "Receive Diamonds",
+                step4_desc: "Diamonds credited to your account within 5 - 10 minutes.",
+                faq_main_title: "FREQUENTLY ASKED QUESTIONS",
+                faq_main_subtitle: "Got questions? We have answers.",
+                faq1_q: "Is my account safe with Chhovornn168?",
+                faq1_a: "Yes, 100% safe. We employ secure anti-DDoS and safe protocols. Your credentials are strictly used for diamond processing.",
+                faq2_q: "How long does delivery take?",
+                faq2_a: "Orders are processed instantly upon payment verification, usually within 5 to 10 minutes.",
+                faq3_q: "What if diamonds don't appear?",
+                faq3_a: "Do not log into the game during top-up. Contact our support team on Telegram or Discord immediately with your transaction reference.",
+                track_title: "TRACK YOUR ORDER",
+                btn_back_store: "Back to Store",
+                track_desc: "Enter your Order ID or Game Gmail/UID.",
+                modal_email: "PLAYER GMAIL / USERNAME",
+                modal_pass: "PLAYER PASSWORD",
+                modal_abaname: "ABA NAME OR BANK NAME",
+                modal_paylink_title: "OFFICIAL PAYMENT LINK",
+                modal_paylink_btn: "🚀 OPEN OFFICIAL ABA PAY LINK",
+                modal_txref: "TRANSACTION REFERENCE / NOTE",
+                modal_submit_btn: "Submit Top-Up Order",
+                footer_desc: "Official ROS Legacy Diamond Top-Up Store. Powered By Chhovornn168. Fast, secure, and reliable gaming currency delivery.",
+                footer_links_title: "QUICK LINKS",
+                footer_channels_title: "OFFICIAL CHANNELS",
+                footer_security_title: "SECURITY GUARANTEE"
+            },
+            km: {
+                nav_store: "ទិញពេជ្រ",
+                nav_howto: "របៀបទិញ",
+                nav_faq: "សំណួរញឹកញាប់",
+                btn_find: "ស្វែងរកការបញ្ជាទិញ",
+                btn_admin: "ចូលជាអភិបាល",
+                hero_title: "បញ្ជីកញ្ចប់ពេជ្រ ROS LEGACY",
+                hero_subtitle: "សេវាកម្មទិញពេជ្រលឿន មានសុវត្ថិភាព និងទុកចិត្តបាន",
+                badge_safe: "ការពារគណនីមានសុវត្ថិភាព ១០០%",
+                badge_fast: "ទម្លាក់ពេជ្រលឿនក្នុង ៥-១០នាទី",
+                badge_ddos: "ប្រព័ន្ធការពារប្រឆាំង DDoS",
+                section_select_pkg: "ជ្រើសរើសកញ្ចប់ពេជ្រ",
+                choose_pkg_label: "ជ្រើសរើសកញ្ចប់",
+                buy_now: "ទិញឥឡូវនេះ",
+                warning_title: "សេចក្តីជូនដំណឹងសំខាន់",
+                warning_desc: "សូមបញ្ចូលអ៊ីម៉ែល ពាក្យសម្ងាត់ និងឈ្មោះ ABA ឱ្យបានត្រឹមត្រូវ។ សូមកុំចូលក្នុងហ្គេម ៥ ទៅ ១០នាទីមុន និងក្រោយពេលបញ្ចូលពេជ្រ។ ប្រសិនបើមានយឺតយ៉ាវ សូមទាក់ទងមកកាន់ Admin តាមរយៈ Telegram ឬ Discord ជាបន្ទាន់។",
+                howto_main_title: "របៀបទិញពេជ្រ ROS LEGACY",
+                howto_main_subtitle: "ធ្វើតាមជំហានងាយៗទាំងនេះ ដើម្បីទទួលបានពេជ្រលឿន និងមានសុវត្ថិភាពដោយ Chhovornn168។",
+                step1_title: "ជ្រើសរើសកញ្ចប់",
+                step1_desc: "ជ្រើសរើសចំនួនពេជ្រដែលអ្នកចង់បានពីតារាងខាងលើ។",
+                step2_title: "បញ្ចូលអ៊ីម៉ែល និងឈ្មោះ ABA",
+                step2_desc: "បំពេញព័ត៌មានសម្ងាត់គណនីហ្គេម និងឈ្មោះអ្នកផ្ញើប្រាក់ ABA ។",
+                step3_title: "ទូទាត់ប្រាក់តាម ABA",
+                step3_desc: "ស្កេន QR ឬផ្ទេរប្រាក់ទៅកាន់គណនីផ្លូវការរបស់ ABA ដោយសុវត្ថិភាព។",
+                step4_title: "ទទួលបានពេជ្រ",
+                step4_desc: "ពេជ្រនឹងត្រូវបញ្ចូលចូលក្នុងគណនីរបស់អ្នកក្នុងរយៈពេល ៥ ដល់ ១០នាទី។",
+                faq_main_title: "សំណួរដែលតែងសួរជាញឹកញាប់",
+                faq_main_subtitle: "មានសំណួរមែនទេ? យើងមានចម្លើយជូន។",
+                faq1_q: "តើគណនីរបស់ខ្ញុំមានសុវត្ថិភាពជាមួយ Chhovornn168 ដែរឬទេ?",
+                faq1_a: "បាទ/ចាស៎ មានសុវត្ថិភាព ១០០%។ យើងប្រើប្រាស់ប្រព័ន្ធការពារមានសុវត្ថិភាពខ្ពស់ ព័ត៌មានរបស់អ្នកត្រូវបានរក្សាទុកយ៉ាងសម្ងាត់។",
+                faq2_q: "តើប្រើពេលប៉ុន្មានទើបទទួលបានពេជ្រ?",
+                faq2_a: "ការបញ្ជាទិញត្រូវបានដំណើរការភ្លាមៗបន្ទាប់ពីផ្ទៀងផ្ទាត់ការទូទាត់ ជាទូទៅក្នុងរយៈពេល ៥ ដល់ ១០នាទី។",
+                faq3_q: "ចុះបើសិនជាពេជ្រមិនចូល?",
+                faq3_a: "សូមកុំចូលហ្គេមកំឡុងពេលកំពុងបញ្ចូល។ សូមទាក់ទងក្រុមការងារជំនួយតាមរយៈ Telegram ឬ Discord ជាបន្ទាន់ដោយផ្ញើលេខកូដប្រតិបត្តិការរបស់អ្នក។",
+                track_title: "ពិនិត្យស្ថានភាពការបញ្ជាទិញ",
+                btn_back_store: "ត្រឡប់ទៅកាន់ហាងវិញ",
+                track_desc: "បញ្ចូលលេខកូដបញ្ជាទិញ ឬអ៊ីម៉ែលគណនីហ្គេមរបស់អ្នក។",
+                modal_email: "ជីម៉ែល ឬ ឈ្មោះគណនីហ្គេម",
+                modal_pass: "ពាក្យសម្ងាត់គណនីហ្គេម",
+                modal_abaname: "ឈ្មោះម្ចាស់គណនី ABA ឬ ធនាគារ",
+                modal_paylink_title: "តំណភ្ជាប់ទូទាត់ប្រាក់ផ្លូវការ",
+                modal_paylink_btn: "🚀 ចុចទីនេះដើម្បីបើកតំណទូទាត់ ABA",
+                modal_txref: "លេខកូដបញ្ជាក់ការទូទាត់ ឬកំណត់ចំណាំ",
+                modal_submit_btn: "បញ្ជូនការបញ្ជាទិញពេជ្រ",
+                footer_desc: "ហាងទិញពេជ្រ ROS Legacy ផ្លូវការ។ រៀបចំឡើងដោយ Chhovornn168 ។ សេវាកម្មរហ័ស មានសុវត្ថិភាព និងទុកចិត្តបាន។",
+                footer_links_title: "តំណភ្ជាប់រហ័ស",
+                footer_channels_title: "ឆានែលផ្លូវការ",
+                footer_security_title: "ការធានាសុវត្ថិភាព"
+            }
+        };
+
+        let currentLang = localStorage.getItem('ros_lang') || 'km';
+
+        window.toggleLanguage = function() {
+            currentLang = currentLang === 'km' ? 'en' : 'km';
+            localStorage.setItem('ros_lang', currentLang);
+            applyTranslations();
+        };
+
+        function applyTranslations() {
+            document.documentElement.lang = currentLang;
+            document.getElementById('langLabel').innerText = currentLang === 'km' ? 'ភាសាខ្មែរ (KH)' : 'English (EN)';
+            
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (translations[currentLang][key]) {
+                    el.innerText = translations[currentLang][key];
+                }
+            });
+            renderProducts();
+        }
+
+        const products = [
+            { id: 'p1', diamonds: '200', price: 3.99, badge: '' },
+            { id: 'p2', diamonds: '300', price: 5.50, badge: '' },
+            { id: 'p3', diamonds: '400', price: 6.99, badge: '' },
+            { id: 'p4', diamonds: '500', price: 8.99, badge: 'HOT' },
+            { id: 'p5', diamonds: '1000', price: 17.50, badge: '' },
+            { id: 'p6', diamonds: '1500', price: 25.50, badge: '' },
+            { id: 'p7', diamonds: '2000', price: 33.99, badge: '' },
+            { id: 'p8', diamonds: '3000', price: 49.99, badge: '' },
+            { id: 'p9', diamonds: '4000', price: 66.99, badge: '' },
+            { id: 'p10', diamonds: '5000', price: 84.99, badge: 'BEST' }
+        ];
+
+        let selectedProduct = null;
+        let currentOrderId = null;
+        let allOrdersCache = {};
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const buyText = translations[currentLang].buy_now;
+            grid.innerHTML = products.map(p => `
+                <div class="bg-cyberpunk-surface border border-cyberpunk-neonCyan/30 rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-cyberpunk-neonCyan transition-all shadow-lg group">
+                    ${p.badge ? `<span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-full text-[10px] font-orbitron font-bold bg-cyberpunk-neonPink text-white shadow-neon-pink">${p.badge}</span>` : ''}
+                    <div class="flex items-center space-x-4">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyberpunk-neonCyan/20 to-cyberpunk-neonPurple/20 border border-cyberpunk-neonCyan/40 flex items-center justify-center text-cyberpunk-neonCyan text-2xl group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-gem"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-orbitron font-extrabold text-2xl text-white">${p.diamonds}</h4>
+                            <p class="text-xs font-mono text-gray-400 tracking-wider">DIAMONDS</p>
+                        </div>
+                    </div>
+                    <div class="pt-6 space-y-4">
+                        <div class="text-center">
+                            <span class="font-orbitron text-xl font-extrabold text-cyberpunk-neonCyan">$${p.price.toFixed(2)}</span>
+                        </div>
+                        <button onclick="openCheckoutModal('${p.id}')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyberpunk-neonPink via-cyberpunk-neonPurple to-cyberpunk-neonCyan font-orbitron text-xs font-bold text-white shadow-neon-pink hover:scale-[1.02] transition-all">
+                            ${buyText}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.openCheckoutModal = function(productId) {
+            selectedProduct = products.find(x => x.id === productId);
+            if (!selectedProduct) return;
+
+            document.getElementById('selectedProductSummary').innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 rounded-xl bg-cyberpunk-neonCyan/20 text-cyberpunk-neonCyan flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-gem"></i>
+                    </div>
+                    <div>
+                        <p class="font-orbitron font-extrabold text-white text-base">${selectedProduct.diamonds} Diamonds</p>
+                        <p class="font-orbitron font-bold text-cyberpunk-neonCyan text-sm">$${selectedProduct.price.toFixed(2)}</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('checkoutModal').classList.remove('hidden');
+        };
+
+        window.closeCheckout = function() {
+            document.getElementById('checkoutModal').classList.add('hidden');
+        };
+
+        window.submitOrder = async function(e) {
+            e.preventDefault();
+            const gameEmail = document.getElementById('gameEmail').value.trim();
+            const gamePass = document.getElementById('gamePass').value.trim();
+            const abaSender = document.getElementById('abaSender').value.trim();
+            const txRef = document.getElementById('txRef').value.trim() || 'N/A';
+            
+            const orderId = 'ROS-' + Math.floor(100000 + Math.random() * 900000);
+            const timestamp = Date.now();
+
+            const orderData = {
+                orderId,
+                packageName: `${selectedProduct.diamonds} Diamonds`,
+                price: selectedProduct.price,
+                gameEmail,
+                gamePass,
+                abaSender,
+                txRef,
+                status: 'Pending',
+                timestamp
+            };
+
+            try {
+                await set(ref(db, 'orders/' + orderId), orderData);
+                currentOrderId = orderId;
+                localStorage.setItem('ros_active_order_id', orderId);
+                closeCheckout();
+                switchView('track');
+                document.getElementById('trackQueryInput').value = orderId;
+                searchOrder();
+                alert(currentLang === 'km' ? 'បានបញ្ជូនការបញ្ជាទិញជោគជ័យ! សូមពិនិត្យស្ថានភាពខាងក្រោម।' : 'Top-Up Order Submitted Successfully! Track your order status below.');
+            } catch (err) {
+                console.error(err);
+                alert('Connection error. Please try again.');
+            }
+        };
+
+        window.switchView = function(viewName) {
+            document.getElementById('storeView').classList.add('hidden');
+            document.getElementById('trackView').classList.add('hidden');
+            document.getElementById('adminView').classList.add('hidden');
+
+            if (viewName === 'store') {
+                document.getElementById('storeView').classList.remove('hidden');
+            } else if (viewName === 'track') {
+                document.getElementById('trackView').classList.remove('hidden');
+            } else if (viewName === 'admin') {
+                document.getElementById('adminView').classList.remove('hidden');
+            }
+        };
+
+        window.searchOrder = function() {
+            const query = document.getElementById('trackQueryInput').value.trim().toLowerCase();
+            const container = document.getElementById('trackResultContainer');
+            if (!query) {
+                container.innerHTML = `<p class="text-xs text-red-400 text-center font-mono">Please enter Order ID.</p>`;
+                return;
+            }
+
+            const matched = Object.values(allOrdersCache).filter(o => 
+                o.orderId.toLowerCase().includes(query) || o.gameEmail.toLowerCase().includes(query)
+            );
+
+            if (matched.length === 0) {
+                container.innerHTML = `<div class="bg-cyberpunk-card border border-gray-800 rounded-2xl p-6 text-center text-gray-400 text-xs font-mono">No orders found matching "${query}"</div>`;
+                return;
+            }
+
+            container.innerHTML = matched.map(o => {
+                let badgeColor = 'bg-yellow-500/20 text-yellow-400 border-yellow-500';
+                if (o.status === 'Approved') badgeColor = 'bg-green-500/20 text-green-400 border-green-500';
+                if (o.status === 'Failed') badgeColor = 'bg-red-500/20 text-red-400 border-red-500';
+
+                return `
+                    <div class="bg-cyberpunk-card border border-cyberpunk-neonCyan/30 rounded-2xl p-5 space-y-3 font-mono text-xs relative">
+                        <button onclick="dismissTrackOrder()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-sm" title="Close"><i class="fa-solid fa-xmark"></i></button>
+                        <div class="flex justify-between items-center pr-6">
+                            <span class="font-orbitron font-bold text-cyberpunk-neonCyan text-sm">${o.orderId}</span>
+                            <span class="px-2.5 py-1 rounded border ${badgeColor}">${o.status.toUpperCase()}</span>
+                        </div>
+                        <div class="space-y-1 text-gray-300">
+                            <p>Package: <span class="text-white">${o.packageName}</span></p>
+                            <p>Account: <span class="text-white">${o.gameEmail}</span></p>
+                            <p>ABA/Bank Name: <span class="text-white">${o.abaSender}</span></p>
+                            <p>Tx Ref: <span class="text-cyberpunk-neonCyan">${o.txRef}</span></p>
+                            <p>Price: <span class="text-white">$${o.price.toFixed(2)}</span></p>
+                            ${o.approvedBy ? `<p class="text-green-400 font-bold">Approved By: <span class="text-white">${o.approvedBy}</span></p>` : ''}
+                            <p>Time: <span class="text-gray-400">${new Date(o.timestamp).toLocaleString()}</span></p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        window.dismissTrackOrder = function() {
+            localStorage.removeItem('ros_active_order_id');
+            switchView('store');
+        };
+
+        window.openAdminLogin = function() {
+            if (sessionStorage.getItem('ros_admin_logged') === 'true') {
+                switchView('admin');
+            } else {
+                document.getElementById('adminLoginModal').classList.remove('hidden');
+            }
+        };
+
+        window.closeAdminLogin = function() {
+            document.getElementById('adminLoginModal').classList.add('hidden');
+        };
+
+        window.handleAdminLogin = function(e) {
+            e.preventDefault();
+            const u = document.getElementById('adminUser').value;
+            const p = document.getElementById('adminPass').value;
+
+            if ((u === 'Chhovornn168' && p === 'G0000@') || (u === 'admin0@' && p === 'admin0@')) {
+                sessionStorage.setItem('ros_admin_logged', 'true');
+                closeAdminLogin();
+                switchView('admin');
+            } else {
+                alert('Invalid Admin Credentials!');
+            }
+        };
+
+        window.logoutAdmin = function() {
+            sessionStorage.removeItem('ros_admin_logged');
+            switchView('store');
+        };
+
+        window.updateOrderStatus = async function(orderId, newStatus) {
+            try {
+                let updateData = { status: newStatus };
+                if (newStatus === 'Approved') {
+                    const selectedAdmin = document.getElementById('adminApproverSelect').value;
+                    if (!selectedAdmin) {
+                        alert('Please select an admin name from the dropdown before approving!');
+                        return;
+                    }
+                    updateData.approvedBy = selectedAdmin;
+                } else {
+                    updateData.approvedBy = null;
+                }
+                await update(ref(db, 'orders/' + orderId), updateData);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        window.deleteOrder = async function(orderId) {
+            if (confirm('Delete this order?')) {
+                try {
+                    await remove(ref(db, 'orders/' + orderId));
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        };
+
+        window.clearAllOrders = async function() {
+            if (confirm('Are you sure you want to clear ALL orders from the database?')) {
+                try {
+                    await set(ref(db, 'orders'), null);
+                    alert('All orders have been cleared.');
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        };
+
+        window.clearPendingAndFailedOrders = async function() {
+            if (confirm('Clear all PENDING and FAILED orders?')) {
+                try {
+                    const entries = Object.values(allOrdersCache);
+                    for (let o of entries) {
+                        if (o.status === 'Pending' || o.status === 'Failed') {
+                            await remove(ref(db, 'orders/' + o.orderId));
+                        }
+                    }
+                    alert('Pending & Failed orders cleared.');
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        };
+
+        window.toggleAdminPassword = function(orderId) {
+            const el = document.getElementById(`pass-text-${orderId}`);
+            const iconEl = document.getElementById(`eye-icon-${orderId}`);
+            const currentPass = el.getAttribute('data-pass');
+            const isMasked = el.getAttribute('data-masked') === 'true';
+
+            if (isMasked) {
+                el.innerText = currentPass;
+                el.setAttribute('data-masked', 'false');
+                iconEl.className = 'fa-solid fa-eye-slash ml-1.5 text-cyberpunk-neonPink cursor-pointer hover:opacity-80';
+            } else {
+                el.innerText = '••••••••';
+                el.setAttribute('data-masked', 'true');
+                iconEl.className = 'fa-solid fa-eye ml-1.5 text-cyberpunk-neonPink cursor-pointer hover:opacity-80';
+            }
+        };
+
+        function initRealtimeSync() {
+            const ordersRef = ref(db, 'orders');
+            onValue(ordersRef, (snapshot) => {
+                const data = snapshot.val() || {};
+                allOrdersCache = data;
+                
+                const entries = Object.values(data);
+                const sortedEntries = entries.sort((a, b) => b.timestamp - a.timestamp);
+
+                let totalCount = sortedEntries.length;
+                let revenue = 0;
+                let pendingCount = 0;
+                let approvedCount = 0;
+                let failedCount = 0;
+
+                let tableRows = sortedEntries.map(o => {
+                    if (o.status === 'Approved') revenue += o.price;
+                    if (o.status === 'Pending') pendingCount++;
+                    if (o.status === 'Approved') approvedCount++;
+                    if (o.status === 'Failed') failedCount++;
+
+                    let badgeColor = 'bg-yellow-500/20 text-yellow-400 border-yellow-500';
+                    if (o.status === 'Approved') badgeColor = 'bg-green-500/20 text-green-400 border-green-500';
+                    if (o.status === 'Failed') badgeColor = 'bg-red-500/20 text-red-400 border-red-500';
+
+                    return `
+                        <tr class="hover:bg-cyberpunk-card/50 transition-colors">
+                            <td class="p-4 font-mono font-bold text-cyberpunk-neonCyan">${o.orderId}</td>
+                            <td class="p-4 font-bold text-white">${o.packageName}</td>
+                            <td class="p-4 font-mono text-xs text-gray-300">
+                                <div>Gmail: ${o.gameEmail}</div>
+                                <div>Pass: <span id="pass-text-${o.orderId}" data-pass="${o.gamePass}" data-masked="true" class="text-cyberpunk-neonPink font-bold">••••••••</span><i id="eye-icon-${o.orderId}" onclick="toggleAdminPassword('${o.orderId}')" class="fa-solid fa-eye ml-1.5 text-cyberpunk-neonPink cursor-pointer hover:opacity-80" title="Toggle Password"></i></div>
+                                <div class="text-cyberpunk-neonCyan">ABA/Bank: ${o.abaSender}</div>
+                                <div class="text-gray-400">Ref: ${o.txRef}</div>
+                                ${o.approvedBy ? `<div class="text-green-400 font-bold mt-1">Approved By: ${o.approvedBy}</div>` : ''}
+                            </td>
+                            <td class="p-4 font-mono font-bold text-white">$${o.price.toFixed(2)}</td>
+                            <td class="p-4"><span class="px-2.5 py-1 rounded text-xs font-mono border ${badgeColor}">${o.status.toUpperCase()}</span></td>
+                            <td class="p-4 text-right space-x-2">
+                                <button onclick="updateOrderStatus('${o.orderId}', 'Approved')" class="px-2 py-1 rounded bg-green-500/20 text-green-400 hover:bg-green-500/40 text-xs font-mono" title="Approve"><i class="fa-solid fa-check"></i></button>
+                                <button onclick="updateOrderStatus('${o.orderId}', 'Failed')" class="px-2 py-1 rounded bg-red-500/20 text-red-400 hover:bg-red-500/40 text-xs font-mono" title="Mark Failed"><i class="fa-solid fa-xmark"></i></button>
+                                <button onclick="deleteOrder('${o.orderId}')" class="px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-red-600 hover:text-white text-xs font-mono" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                if (sortedEntries.length === 0) {
+                    tableRows = `<tr><td colspan="6" class="p-8 text-center text-gray-500 font-mono text-xs">No orders in database.</td></tr>`;
+                }
+
+                document.getElementById('adminOrdersTableBody').innerHTML = tableRows;
+                document.getElementById('statTotal').innerText = totalCount;
+                document.getElementById('statRevenue').innerText = `$${revenue.toFixed(2)}`;
+                document.getElementById('statPending').innerText = pendingCount;
+                document.getElementById('statApproved').innerText = approvedCount;
+                document.getElementById('statFailed').innerText = failedCount;
+            });
+        }
+
+        window.onload = function() {
+            applyTranslations();
+            initRealtimeSync();
+
+            const activeId = localStorage.getItem('ros_active_order_id');
+            if (activeId) {
+                setTimeout(() => {
+                    if (allOrdersCache[activeId]) {
+                        switchView('track');
+                        document.getElementById('trackQueryInput').value = activeId;
+                        searchOrder();
+                    }
+                }, 800);
+            }
+        };
+    </script>
+</body>
+</html>
